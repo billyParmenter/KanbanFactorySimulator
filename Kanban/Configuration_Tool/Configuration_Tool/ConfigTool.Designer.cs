@@ -59,6 +59,8 @@ namespace Configuration_Tool
             this.cancelButton = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.finishButton = new System.Windows.Forms.Button();
+            this.label10 = new System.Windows.Forms.Label();
+            this.runnerDelay = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.timeScale)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trayCap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bezelInit)).BeginInit();
@@ -70,6 +72,7 @@ namespace Configuration_Tool
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.runnerDelay)).BeginInit();
             this.SuspendLayout();
             // 
             // lanesListBox
@@ -318,6 +321,8 @@ namespace Configuration_Tool
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.runnerDelay);
+            this.tabPage2.Controls.Add(this.label10);
             this.tabPage2.Controls.Add(this.timeScale);
             this.tabPage2.Controls.Add(this.label11);
             this.tabPage2.Controls.Add(this.label12);
@@ -354,6 +359,27 @@ namespace Configuration_Tool
             this.finishButton.UseVisualStyleBackColor = true;
             this.finishButton.Click += new System.EventHandler(this.FinishButton_Click);
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 158);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(68, 13);
+            this.label10.TabIndex = 24;
+            this.label10.Text = "Runner Time";
+            // 
+            // runnerDelay
+            // 
+            this.runnerDelay.Location = new System.Drawing.Point(75, 156);
+            this.runnerDelay.Maximum = new decimal(new int[] {
+            600,
+            0,
+            0,
+            0});
+            this.runnerDelay.Name = "runnerDelay";
+            this.runnerDelay.Size = new System.Drawing.Size(47, 20);
+            this.runnerDelay.TabIndex = 25;
+            // 
             // ConfigTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -376,6 +402,7 @@ namespace Configuration_Tool
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.runnerDelay)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -412,6 +439,8 @@ namespace Configuration_Tool
         private System.Windows.Forms.Button finishButton;
         private System.Windows.Forms.Button updateButton;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.NumericUpDown runnerDelay;
     }
 }
 

@@ -84,6 +84,7 @@ namespace Configuration_Tool
             bulbInit.Value = configValues["Bulb_Count"];
             bezelInit.Value = configValues["Bezel_Count"];
             trayCap.Value = configValues["Test_Tray_Cap"];
+            runnerDelay.Value = configValues["Runner_Delay"];
 
             lanes = db.GetLanes();
             AddLanesToDisplay();
@@ -148,6 +149,7 @@ namespace Configuration_Tool
             configValues["Bulb_Count"] = (int)bulbInit.Value;
             configValues["Bezel_Count"] = (int)bezelInit.Value;
             configValues["Test_Tray_Cap"] = (int)trayCap.Value;
+            configValues["Runner_Delay"] = (int)runnerDelay.Value;
 
             db.UpdateDatabase(configValues, lanes, initLaneCount);
 

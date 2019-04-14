@@ -84,7 +84,7 @@ namespace Configuration_Tool
 
                 while(reader.Read())
                 {
-                    configValues.Add(reader.GetString(0), reader.GetInt32(1));
+                    configValues.Add(reader.GetString(0), int.Parse(reader.GetString(1)));
                 }
 
                 sqlConnection.Close();
@@ -165,6 +165,7 @@ namespace Configuration_Tool
             Update("Bulb_Count", configValues["Bulb_Count"]);
             Update("Bezel_Count", configValues["Bezel_Count"]);
             Update("Test_Tray_Cap", configValues["Test_Tray_Cap"]);
+            Update("Runner_Delay", configValues["Runner_Delay"]);
 
             UpdateLanes(lanes, lanesFromDB);
 
