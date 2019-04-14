@@ -23,13 +23,31 @@ using Timer = System.Timers.Timer;
 
 namespace KanbanRunner
 {
-    class Database
+    /*
+     * Handles database interaction
+     */
+    class Database : IDisposable
     {
+        /*
+         * The current simulation timescale
+         */
+        public int TimeScale => _timeScale;
+        
+        /*
+         * If this database object is connected
+         */
+        public bool IsConnected { get; private set; } = false;
+        
+        /*
+         * The last error that occured (only set during intialization)
+         */
+        public SqlException LastError { get; private set; } = null;
 
-        private int timeScale;
+        private int _timeScale, _runnerDelay_Seconds;
 
         private SqlConnection connectionSource;
 
+        private Configuration configuration;
 
 
 
@@ -71,7 +89,27 @@ namespace KanbanRunner
             //start connection to the database
             connectionSource = new SqlConnection(connectionStringSource);
 
-            GetTimeScale();
+            try
+            {
+                connectionSource.Open();
+                IsConnected = true;
+            }
+            catch(SqlException ex)
+            {
+                IsConnected = false;
+                LastError = ex;
+            }
+
+            // only create a configuration and get its values if the database
+            // is connected
+            if (IsConnected)
+            {
+                configuration = new Configuration(connectionSource);
+
+                GetTimeScale();
+
+                GetRunnerDelay();
+            }
         }
 
 
@@ -83,29 +121,37 @@ namespace KanbanRunner
         *      PARAMETERS : 
         *          none
         *      RETURNS:
-        *          none    
+        *          none  
+        *      THROWS:
+        *          InvalidOperationException if Time_Scale doesn't exist or isn't an int
         */
-        public void GetTimeScale()
+        private void GetTimeScale()
         {
-            string Query = "Select [Value] from Config where [Key] = 'Time_Scale'";
-            SqlCommand getTimeScale = new SqlCommand(Query, connectionSource);
-
-            try
+            if(!configuration.GetInteger("Time_Scale", out _timeScale))
             {
-                connectionSource.Open();
-
-                timeScale = (int)getTimeScale.ExecuteScalar();
-
-                connectionSource.Close();
+                throw new InvalidOperationException("Could not get Time_Scale (int) from configuration table");
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                connectionSource.Close();
-            }
-
         }
 
+
+        /*
+         * FUNCTION: GetRunnerDelay
+         * DESCRIPTION:
+         *      - Gets the runner delay from the config table
+         * PARAMETERS:
+         *      none
+         * RETURNS:
+         *      none
+        *      THROWS:
+        *          InvalidOperationException if Runner_Delay doesn't exist or isn't an int
+         */
+        private void GetRunnerDelay()
+        {
+            if (!configuration.GetInteger("Runner_Delay", out _runnerDelay_Seconds))
+            {
+                throw new InvalidOperationException("Could not get Runner_Delay (int) from configuration table");
+            }
+        }
 
 
 
@@ -120,9 +166,10 @@ namespace KanbanRunner
 */
         public void Wait()
         {
-            double time = 30000 / timeScale;
+            double time = _runnerDelay_Seconds / _timeScale;
 
-            Thread.Sleep((int)time);
+            // time is in seconds, sleep takes milliseconds
+            Thread.Sleep((int)(time * 1000));
         }
 
 
@@ -142,24 +189,10 @@ namespace KanbanRunner
             string Query = "Fill_Bins";
             SqlCommand fillBins = new SqlCommand(Query, connectionSource)
             {
-                CommandType = System.Data.CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure
             };
 
-
-
-            try
-            {
-                connectionSource.Open();
-
-                fillBins.ExecuteNonQuery();
-
-                connectionSource.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                connectionSource.Close();
-            }
+            fillBins.ExecuteNonQuery();
         }
 
 
@@ -183,20 +216,17 @@ namespace KanbanRunner
 
             run.Parameters.AddWithValue("@Unix_Time", runTime);
 
+            run.ExecuteNonQuery();
+        }
 
-            try
-            {
-                connectionSource.Open();
-
-                run.ExecuteNonQuery();
-
-                connectionSource.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                connectionSource.Close();
-            }
+        /*
+         * DESCRIPTION:
+         *      Closes the sql connection
+         */
+        public void Dispose()
+        {
+            connectionSource.Close();
+            IsConnected = false;
         }
     }
 }
