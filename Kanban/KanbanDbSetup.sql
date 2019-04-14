@@ -17,20 +17,22 @@ go
 --create the configuration table
 Create table Config (
 	[Key] varchar(30),
-	[Value] int
+	[Value] varchar(256)
 )
 
 insert into Config 
 	([key], [value])
 Values
-	('Time_Scale', 1),
-	('Harness_Count', 55),
-	('Reflector_Count', 35),
-	('Housing_Count', 24),
-	('Lens_Count', 40),
-	('Bulb_Count', 60),
-	('Bezel_Count', 75),
-	('Test_Tray_Cap', 60);
+	('Time_Scale', '1'),
+	-- delay between runner checks in seconds
+	('Runner_Delay', '300'),
+	('Harness_Count', '55'),
+	('Reflector_Count', '35'),
+	('Housing_Count', '24'),
+	('Lens_Count', '40'),
+	('Bulb_Count', '60'),
+	('Bezel_Count', '75'),
+	('Test_Tray_Cap', '60');
 
 
 
@@ -67,7 +69,9 @@ create table Lane (
 	Lens_Count int,
 	Bulb_Count int,
 	Bezel_Count int,
-	Is_Running int default 0
+	Is_Running int default 0,
+	Start_Time datetime,
+	End_Time datetime
 );
 
 
@@ -371,3 +375,39 @@ Begin
 
 End
 go
+
+
+
+
+-- Gets the percentage finished of the current lane (range [0-1]).
+-- If the result is >1, the item is finished and another has not been queued
+CREATE PROCEDURE Get_Remaining_Time (
+	@LaneID INT
+)
+AS
+	DECLARE @TimeRemaining float
+	DECLARE @TotalTime float
+BEGIN
+	SELECT @TimeRemaining = CONVERT(float, DATEDIFF(second, [Start_Time], GETDATE())),
+		   @TotalTime = CONVERT(float, DATEDIFF(second, [Start_Time], [End_Time]))
+		   FROM Lane WHERE LaneID = @LaneID
+	
+	SELECT (@TotalTime / @TimeRemaining) AS Percent_Finished
+END
+GO
+
+
+
+-- Updates a lane's start and finish times to the current time and the current time + seconds to complete
+CREATE PROCEDURE Update_Lane_Times (
+	@LaneID INT,
+	@SecondsToComplete FLOAT
+)
+AS
+BEGIN
+	UPDATE Lane SET
+		Start_Time = GETDATE(),
+		End_Time = DATEADD(second, @SecondsToComplete, GETDATE())
+		WHERE LaneID = @LaneID
+END
+GO
