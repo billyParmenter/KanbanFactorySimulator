@@ -209,13 +209,12 @@ namespace KanbanRunner
 */
         public void Run()
         {
-            string Query = "Insert into [Event] values ('Last_Run', @Unix_Time)";
-            SqlCommand run = new SqlCommand(Query, connectionSource);
-
-            int runTime = (int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-
-            run.Parameters.AddWithValue("@Unix_Time", runTime);
-
+            string Query = "Update_Runner_Time";
+            SqlCommand run = new SqlCommand(Query, connectionSource)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            
             run.ExecuteNonQuery();
         }
 
