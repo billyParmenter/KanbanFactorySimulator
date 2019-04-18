@@ -47,35 +47,6 @@ namespace ASQL_Simulation
             return (int)time;
         }
 
-
-
-
-
-        /*
-        *      FUNCTION : calcFailRate
-        *      DESCRIPTION :
-        *          - This function will calculate the fail rate
-        *          to be used in the workstation based on the fail rate
-        *          value from the worker.
-        *      PARAMETERS : 
-        *          none
-        *      RETURNS:
-        *          none    
-        */
-        public int CalcFailRate()
-        {
-            int Pass;
-            Random random = new Random();
-            int rand = random.Next(0, 1000);
-            if (rand < (FailRate * 100))
-            {
-                Pass = 0;
-            }
-            else
-            {
-                Pass = 1;
-            }
-            return Pass;
-        }
+        
     }
 }

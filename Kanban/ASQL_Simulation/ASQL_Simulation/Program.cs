@@ -45,16 +45,14 @@ namespace ASQL_Simulation
                 Thread thread = new Thread(()=>sim.RunSim(db, lane));
 
                 thread.Start();
-
-                //sim.RunSim(db, lane);
-
+                
                 Console.Write("Press any key to stop...");
 
                 Console.ReadKey();
 
-                sim.DoProcessing = false;
+                thread.Interrupt();
 
-                thread.Join();
+                db.ReleaseLane();
             }
         }
 

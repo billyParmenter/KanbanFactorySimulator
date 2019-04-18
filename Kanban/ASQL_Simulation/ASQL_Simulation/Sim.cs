@@ -9,27 +9,35 @@ namespace ASQL_Simulation
 {
     class Sim
     {
-        public bool DoProcessing = true;
-
+        /// <summary>
+        /// Constructs lamps indefinitely.
+        /// </summary>
+        /// <param name="db">The database to interact with</param>
+        /// <param name="lane">The lane to construct parts on</param>
         public void RunSim(Database db, Lane lane)
         {
+            Logger logger = new Logger("SIMULATOR-" + lane.LaneID);
+
             db.GetWorkerInfo();
-
-            int Pass;
-
-            while (DoProcessing)
+            
+            while (true)
             {
                 db.CreatePart(lane.LaneID);
 
-                Pass = lane.CalcFailRate();
+                logger.Log("Created new part");
+                
+                int units_tested = db.TestProduct(lane.LaneID);
 
-                db.TestProduct(Pass, lane.WorkerID);
+                logger.Log("Tested {0} units", units_tested);
 
-                //Console.WriteLine("Working...");
-                Thread.Sleep(lane.CalcTimeDev());
+                int sleep_time = lane.CalcTimeDev();
+
+                db.UpdateNextFinish(sleep_time / 1000.0);
+                logger.Log("Sleeping for {0} seconds to create new part", sleep_time / 1000.0);
+
+                Thread.Sleep(sleep_time);
             }
 
-            db.ReleaseLane();
         }
     }
 }

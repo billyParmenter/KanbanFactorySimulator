@@ -173,7 +173,7 @@ namespace ASQL_Simulation
         *      PARAMETERS : 
         *          int LaneID
         *      RETURNS:
-        *          none    
+        *          The number of units tested 
         */
         public void CreatePart(int LaneID)
         {
@@ -205,6 +205,7 @@ namespace ASQL_Simulation
 
 
 
+
         /*
         *      FUNCTION : TestProduct
         *      DESCRIPTION :
@@ -216,16 +217,48 @@ namespace ASQL_Simulation
         *      RETURNS:
         *          none    
         */
-        public void TestProduct(int fail, int workerID)
+        public int TestProduct(int laneID)
         {
-            string Query = "Test_Product";
+            string Query = "Do_Tray_Test";
             SqlCommand getLane = new SqlCommand(Query, connectionSource)
             {
                 CommandType = System.Data.CommandType.StoredProcedure
             };
 
-            getLane.Parameters.AddWithValue("@Fail", fail);
-            getLane.Parameters.AddWithValue("@workerID", workerID);
+            getLane.Parameters.AddWithValue("@LaneID", laneID);
+
+            try
+            {
+                connectionSource.Open();
+
+                int value = Convert.ToInt32(getLane.ExecuteScalar());
+
+                connectionSource.Close();
+
+                return value;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                connectionSource.Close();
+
+                return -1;
+            }
+        }
+        
+        /// <summary>
+        /// Updates the seconds to completion for the current part.
+        /// </summary>
+        /// <param name="seconds">The number of seconds until the next part is complete</param>
+        public void UpdateNextFinish(double seconds)
+        {
+            SqlCommand getLane = new SqlCommand("Update_Lane_Times", connectionSource)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            getLane.Parameters.AddWithValue("@LaneID", lane.LaneID);
+            getLane.Parameters.AddWithValue("@SecondsToComplete", seconds);
 
             try
             {
@@ -240,10 +273,7 @@ namespace ASQL_Simulation
                 Console.WriteLine(ex);
                 connectionSource.Close();
             }
-
         }
-
-
 
 
 
@@ -266,7 +296,7 @@ namespace ASQL_Simulation
             {
                 connectionSource.Open();
 
-                lane.TimeScale = (int)getTimeScale.ExecuteScalar();
+                lane.TimeScale = int.Parse(getTimeScale.ExecuteScalar().ToString());
 
                 connectionSource.Close();
             }
@@ -364,5 +394,6 @@ namespace ASQL_Simulation
                 connectionSource.Close();
             }
         }
+        
     }
 }
