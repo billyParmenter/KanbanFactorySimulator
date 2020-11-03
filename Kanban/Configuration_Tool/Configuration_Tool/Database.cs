@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Configuration_Tool
@@ -17,17 +15,6 @@ namespace Configuration_Tool
 
 
 
-
-
-        /*
-                -------Function-------
-
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
-
-        */
         public Database()
         {
             Initialize();
@@ -40,10 +27,10 @@ namespace Configuration_Tool
         /*
                  -------Function-------
 
-             Name  : 
-             Info  : 
-             Params: 
-             Return: 
+             Name  : Initialize
+             Info  : Initializes the database connection
+             Params: none
+             Return: none
 
         */
         private void Initialize()
@@ -61,10 +48,10 @@ namespace Configuration_Tool
         /*
                 -------Function-------
 
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
+            Name  : GetConfigValues
+            Info  : Gets the current config values from the database
+            Params: none
+            Return: A dictionary of config values (< configKey, configValue>)
 
         */
         public Dictionary<string, int> GetConfigValues()
@@ -82,7 +69,7 @@ namespace Configuration_Tool
 
                 SqlDataReader reader = command.ExecuteReader();
 
-                while(reader.Read())
+                while (reader.Read())
                 {
                     configValues.Add(reader.GetString(0), int.Parse(reader.GetString(1)));
                 }
@@ -105,10 +92,10 @@ namespace Configuration_Tool
         /*
                 -------Function-------
 
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
+            Name  : GetLanes
+            Info  : Gets the current lanes from the database
+            Params: none
+            Return: A dictionary of lanes from the database (< laneID, workerExpLevel>)
 
         */
         public Dictionary<int, int> GetLanes()
@@ -149,10 +136,12 @@ namespace Configuration_Tool
         /*
                 -------Function-------
 
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
+            Name  : UpdateDatabase
+            Info  : Updates the database with the new configuration values and lanes
+            Params: configValues - A dictionary of config values to update
+                    lanes - A dictionary of lanes to update
+                    lanesFromDB - The number of lanes in the database
+            Return: none
 
         */
         public void UpdateDatabase(Dictionary<string, int> configValues, Dictionary<int, int> lanes, int lanesFromDB)
@@ -184,10 +173,10 @@ namespace Configuration_Tool
         /*
                 -------Function-------
 
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
+            Name  : AddLanes
+            Info  : Adds lanes to the database
+            Params: lanes - A dictionary of lanes to add to the database
+            Return: none
 
         */
         private void AddLanes(Dictionary<int, int> lanes)
@@ -229,15 +218,16 @@ namespace Configuration_Tool
         /*
                 -------Function-------
 
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
+            Name  : UpdateLanes
+            Info  : Updates the worker experience level of each lane in the database
+            Params: lanes - The dictionary of lanes (< laneID, workerExpLevel>)
+                    lanesFromDB - the number of lanes in the database
+            Return: none
 
         */
         private void UpdateLanes(Dictionary<int, int> lanes, int lanesFromDB)
         {
-            for(int i = 0; i < lanesFromDB; i++)
+            for (int i = 0; i < lanesFromDB; i++)
             {
                 string query = "update worker set Experience_Level = @Exp where WorkerID = (select WorkerID from lane where LaneID = @LaneID)";
                 SqlCommand command = new SqlCommand(query, sqlConnection);
@@ -272,10 +262,11 @@ namespace Configuration_Tool
         /*
                 -------Function-------
 
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
+            Name  : Update
+            Info  : Updates a config value 
+            Params: key - The key of the config to update
+                    value - The value to set the config to
+            Return: none
 
         */
         private void Update(string key, int value)

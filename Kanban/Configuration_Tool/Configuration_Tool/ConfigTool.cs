@@ -41,22 +41,12 @@ namespace Configuration_Tool
 
 
 
-        /*
-                -------Function-------
-
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
-
-        */
+        
         public ConfigTool()
         {
             InitializeComponent();
 
             Init();
-
-
         }
 
 
@@ -66,10 +56,11 @@ namespace Configuration_Tool
         /*
                 -------Function-------
 
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
+            Name  : Init
+            Info  : Initializes the display with the config 
+                        values and lanes from the database
+            Params: none
+            Return: none
 
         */
         private void Init()
@@ -98,7 +89,7 @@ namespace Configuration_Tool
             //Set inital selected items
             laneNumberLabel.Text = "Lane #" + (lanes.Count() + 1);
             experienceComboBox.SelectedIndex = 0; 
-        } 
+        }
 
 
 
@@ -107,10 +98,9 @@ namespace Configuration_Tool
         /*
                 -------Function-------
 
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
+            Name  : SubmitLaneButton_Click
+            Info  : Adds a new lane to the display and lanes dictionary
+            Return: none
 
         */
         private void SubmitLaneButton_Click(object sender, EventArgs e)
@@ -132,10 +122,10 @@ namespace Configuration_Tool
         /*
                 -------Function-------
 
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
+            Name  : FinishButton_Click
+            Info  : Updates the database with the current config 
+                        values and lanes then closes the program
+            Return: none
 
         */
         private void FinishButton_Click(object sender, EventArgs e)
@@ -163,10 +153,10 @@ namespace Configuration_Tool
         /*
                 -------Function-------
 
-            Name  : 
-            Info  : 
-            Params: 
-            Return: 
+            Name  : AddLanesToDisplay
+            Info  : Adds the lanes in the lanes dictionary to the display
+            Params: none
+            Return: none
 
         */
         private void AddLanesToDisplay()
@@ -194,6 +184,18 @@ namespace Configuration_Tool
             }
         }
 
+
+
+        /*
+                -------Function-------
+
+            Name  : LaneCLicked
+            Info  : Allows the user to update a lane currently on the display. 
+                        Hides the submit button and shows the update and cancel 
+                        buttons
+            Return: none
+
+        */
         private void LaneCLicked(object sender, EventArgs e)
         {
             submitLaneButton.Visible = false;
@@ -204,6 +206,20 @@ namespace Configuration_Tool
 
         }
 
+
+
+
+
+        /*
+                -------Function-------
+
+            Name  : CancelButton_Click
+            Info  : Sets the current lane to the last in the list and does not 
+                        update the list. Shows the submit button and hides the 
+                        update and cancel buttons
+            Return: none
+
+        */
         private void CancelButton_Click(object sender, EventArgs e)
         {
             submitLaneButton.Visible = true;
@@ -213,6 +229,17 @@ namespace Configuration_Tool
             laneNumberLabel.Text = "Lane #" + (lanes.Count() + 1);
         }
 
+
+        /*
+                -------Function-------
+
+            Name  : UpdateButton_Click
+            Info  : Updates the selected lane in both the display and database then 
+                        rebinds the datasource. Shows the submit button and hides the 
+                        update and cancel buttons
+            Return: none
+
+        */
         private void UpdateButton_Click(object sender, EventArgs e)
         {
             display[lanesListBox.SelectedIndex] = "Lane #" + (lanesListBox.SelectedIndex + 1) + " " + experienceComboBox.Text;
